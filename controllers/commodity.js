@@ -4,7 +4,7 @@ var {sendJson} = require('../utils/response')
 class CommodityController {
 
   // 分销树操作
-  _addNodeToDistributionTree(commodityId,fromShopId,toShopId,callback,errorCb){
+  _addDistributor(commodityId,fromShopId,toShopId,callback,errorCb){
     CommodityModel.findById(commodityId,(commodity)=>{
       let distributionTree = commodity['distributionTree'];
       if(!distributionTree){
@@ -104,27 +104,24 @@ class CommodityController {
       commodityInfo['createTime'] = Date.now();
       commodityInfo['shopId'] = shopId;
       commodityInfo['distributionTree'] = [];
-      let models = commodityInfo.models || [];
-      delete commodityInfo.models;
       CommodityModel.save(commodityInfo,(commodityInfo)=>{
 
-        CommodityModel.updateData({_id:commodityInfo._id},{$push:{'models':{$each:models}}},()=>{
-
           //添加文档id
-           shopCommodityInfo['commodityId'] = commodityInfo._id;
-           ShopModel.updateData({_id:shopId},{$push:{createdCommodities:shopCommodityInfo}},(docs)=>{
-              this._getListByShopId(shopId,(commodityList)=>{  //获取最新列表
-                sendJson(res,{
-                   code:0,
-                   msg:'add commodity success',
-                   data:{
-                    commodityList
-                   }
-                })
-              },errorCb);
-           },errorCb);
+          shopCommodityInfo['commodityId'] = commodityInfo._id;
+          ShopModel.updateData({_id:shopId},{$push:{createdCommodities:shopCommodityInfo}},(docs)=>{
+            //获取最新列表
+            this._getListByShopId(shopId,(commodityList)=>{  
+              sendJson(res,{
+                 code:0,
+                 msg:'add commodity success',
+                 data:{
+                  commodityList
+                 }
+              })
+            },errorCb);
+          },errorCb);
 
-         },errorCb)
+         // },errorCb)
          
       },errorCb)
    }
@@ -136,7 +133,7 @@ class CommodityController {
        }
 
        ShopModel.updateData({_id:myShopId},{$push:{clonedCommodities:shopCommodityInfo}},(docs)=>{
-          this._addNodeToDistributionTree(commodityId,shopId,myShopId,()=>{
+          this._addDistributor(commodityId,shopId,myShopId,()=>{
             this._getListByShopId(shopId,(commodityList)=>{
               sendJson(res,{
                  code:0,
@@ -465,6 +462,8 @@ class CommodityController {
               docs.forEach((doc) => {
                 doc.createdCommodities && doc.createdCommodities.forEach((commodityItem)=>{
                   if(commodityItem.upcarriage == 1){
+                    console.log(1111111)
+                    console.log(commodityItem)
                       commodity = commodityItem.commodityId.toObject();
                       commodity['shopOwnerRecommodate'] = commodityItem['shopOwnerRecommodate'];
                       commodity['upcarriage'] = commodityItem['upcarriage'];

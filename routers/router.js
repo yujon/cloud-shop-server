@@ -241,7 +241,6 @@ module.exports = {
             action:'getHotCaseList',
             type:'get'
         },
-       
         {
             action:'updateHotCaseList',
             type:'post'
@@ -251,9 +250,17 @@ module.exports = {
             type:'get'
         },
         {
-            action:'updateSpecialActivityList',
+            action:'addSpecialActivityListItem',
             type:'post'
         },
+         {
+            action:'updateSpecialActivityListItem',
+            type:'post'
+        },
+         {
+            action:'removeSpecialActivityListItem',
+            type:'post'
+        }
     ],
 
     order:[

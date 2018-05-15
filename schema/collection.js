@@ -21,8 +21,6 @@ module.exports = {
         sex:{type:String,default:'男',enum:['男','女']},
         login:{type:Boolean,default:false},
         latestLoginInTime:{type:Date,default:Date()},
-        sales:{type:Number,default:0}, //销售额
-        balance:{type:Number,default:0}, //余额
 
         shopCollections:[{
             shopId:{type:Schema.Types.ObjectId,ref:'shops'}
@@ -74,8 +72,8 @@ module.exports = {
         carryCate:[{
             name:String,
             exceptAreas:[String],  //不包邮地区，货到付款
-            freeSum:Number,  //多少件起免运费
-            normalPrice:Number, //运费
+            freeSum:{type:Number,default:1},  //多少件起免运费
+            normalPrice:{type:Number,default:0}, //运费
         }],
         //商品分类，店主自定义分类，与商品类目不同
         commodityCate:[{
@@ -101,7 +99,6 @@ module.exports = {
                 commodityCateId:Schema.Types.ObjectId,
                 upcarriage:{type:Number,default:0}, //1表示上架销售中，0表示下架
                 shopOwnerRecommodate:{type:Boolean,default:false},
-                originCommodityRemoved:{type:Boolean,default:false},  //目标商品是否被移除
                 saleQuantity:{type:Number,default:0},   //直销
                 saleAmount:{type:Number,default:0}, //直销
             }
@@ -142,11 +139,9 @@ module.exports = {
     markets:{         
         swiperImgs:{type:[String]},
         hotCase:[
-            {       
+            {
                 shopId:{type:Schema.Types.ObjectId,ref:'shops'},
-                commodityId:{type:Schema.Types.ObjectId,ref:'commodities'},
-                startTime:{type:Date,default:Date.now()},
-                endTime:{type:Date}
+                commodityId:{type:Schema.Types.ObjectId,ref:'commodities'}
             }
         ],
         specialActivities:[
@@ -156,7 +151,8 @@ module.exports = {
                 endTime:Date,
                 commodities:[
                     {
-                       commodityId:{type:Schema.Types.ObjectId,ref:'commodities'}
+                        shopId:{type:Schema.Types.ObjectId,ref:'shops'},
+                        commodityId:{type:Schema.Types.ObjectId,ref:'commodities'}
                     }
                 ]
             }
@@ -180,7 +176,7 @@ module.exports = {
         buySum:Number,
         words:String,
         createTime:{type:Date,default:Date()},
-        status:{type:Number,default:0}, //0未支付，1已支付未发货，2已支付已发货，3已收货  
+        status:{type:Number,default:0}, //0未支付，1已支付未发货，2已支付已发货，3已收货，4已评论
         payMoney:{
             allCommodityPrice:{type:Number,default:0},
             carryPrice:{type:Number,default:0},
@@ -198,13 +194,7 @@ module.exports = {
         receiveCommodityTime:{type:Date}, 
         commentCreateTime:{type:Date},
         commentContent:String,
-        commentGrade:{type:Number},
-        tracking:[
-            {
-                atTime:{type:Date},
-                desc:String
-            }
-        ]
+        commentGrade:{type:Number}
     },
 
     "messages":{

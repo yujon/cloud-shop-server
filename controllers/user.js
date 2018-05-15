@@ -376,13 +376,7 @@ class UserController {
          let tempList = [];
          let finishedSum = 0;
          if(!shopCarCommodityList || !shopCarCommodityList.length){
-             sendJson(res,{
-               code:0,
-               msg:'empty commodity list',
-               data:{
-                 shopCarCommodityList:[]
-               }
-             })
+             callback && callback([]);
          }
          shopCarCommodityList.forEach((item) => {
             let tempItem = item.toObject();

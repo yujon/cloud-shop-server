@@ -47,7 +47,7 @@ class MarketController {
 
 
   getHotCaseList(req,res,next,errorCb){
-      MarketModel.findOneAndPopulate({},{"hotCase":1},"hotCase.shopId hotCase.commodityId",null,(docs)=>{
+      MarketModel.findOne({},{"hotCase":1},(docs)=>{
         if(docs){
           sendJson(res,{
             code: 0,
@@ -65,12 +65,12 @@ class MarketController {
 
    updateHotCaseList(req,res,next,errorCb){
       const {hotCaseList} = req.body;
-      MarketModel.updateData({},{$set:{hotCase:hotCaseList}},(docs)=>{
+      MarketModel.updateData({},{$set:{hotCase:hotCaseList}},(doc)=>{
            sendJson(res,{
               code:0,
               msg:'update hotCase success',
               data:{
-                hotCaseList:docs.hotCase
+                hotCaseList:doc.hotCase
               }
            })
          
@@ -78,26 +78,24 @@ class MarketController {
     }
 
    getSpecialActivityList(req,res,next,errorCb){
-      MarketModel.findOneAndPopulate({},{"specialActivities":1},"specialActivities.commodities.commodityId",null,(docs)=>{
-        if(docs){
+      MarketModel.findOne({},{"specialActivities":1},(doc)=>{
+        if(doc){
           sendJson(res,{
             code: 0,
             msg:'get activity list success',
             data:{
-              specialActivityList:docs.specialActivities
+              specialActivityList:doc.specialActivities
             }
           })
         }else{
           errorCb(200,-1,'get specialActivities fail')
         }
-        
       },errorCb);
    }
 
-   addSpecialActivity(req,res,next,errorCb){
-      var params = req.body;
-      var specialActivityInfo = params.specialActivityInfo;
-      MarketModel.updateData({},{$push:{specialActivities:specialActivityInfo}},(docs)=>{
+   addSpecialActivityListItem(req,res,next,errorCb){
+      var {specialActivityListItem} = req.body;
+      MarketModel.updateData({},{$push:{specialActivities:specialActivityListItem}},(docs)=>{
           sendJson(res,{
             code:0,
             msg:'add specialActivity success',
@@ -108,26 +106,12 @@ class MarketController {
       },errorCb);
    }
 
-   removeSpecialActivity(req,res,next,errorCb){
-      var params = req.body;
-      var specialActivityId = params.specialActivityId;
-      MarketModel.updateData({},{$pull:{specialActivities:{_id:specialActivityId}}},(docs)=>{
-          sendJson(res,{
-            code:0,
-            msg:'remove hotCase success',
-            data:{
-              specialActivityList:docs.specialActivities
-            }
-         })
-      },errorCb);
-   }
-
-   updateSpecialActivity(req,res,next,errorCb){
-      const {specialActivityId,specialActivityInfo} = req.body;
-      MarketModel.updateData({"specialActivities._id":specialActivityId},specialActivityInfo,(docs)=>{
+    updateSpecialActivityListItem(req,res,next,errorCb){
+      const {specialActivityListItemId,specialActivityListItem} = req.body;
+      MarketModel.updateData({"specialActivities._id":specialActivityListItemId},{$set:{"specialActivities.$":specialActivityListItem}},(docs)=>{
            sendJson(res,{
               code:0,
-              msg:'update specialActivity success',
+              msg:'update specialActivityListItem success',
               data:{
                 specialActivityList:docs.specialActivities
               }
@@ -136,7 +120,19 @@ class MarketController {
       },errorCb);
     }
 
-   
+   removeSpecialActivityListItem(req,res,next,errorCb){
+      var params = req.body;
+      var specialActivityListItemId = params.specialActivityListItemId;
+      MarketModel.updateData({},{$pull:{specialActivities:{_id:specialActivityListItemId}}},(docs)=>{
+          sendJson(res,{
+            code:0,
+            msg:'remove specialActivityListItem success',
+            data:{
+              specialActivityList:docs.specialActivities
+            }
+         })
+      },errorCb);
+   }
 }
 
 module.exports = new MarketController();
